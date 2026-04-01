@@ -1,0 +1,73 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+// Caesar Decrypt
+char decryptChar(char c, int key) {
+    if (isalpha(c)) {
+        char base = isupper(c) ? 'A' : 'a';
+        return (char)(((c - base - key) % 26 + 26) % 26 + base);
+    }
+    return c;
+}
+
+string CaesarDecrypt(const string& text, int key) {
+    string result;
+    for (char c : text) result += decryptChar(c, key);
+    return result;
+}
+
+// Reverse
+string ReverseText(const string& text) {
+    string result = text;
+    reverse(result.begin(), result.end());
+    return result;
+}
+
+// Restore duplicates
+string RestoreDuplicates(const string& text) {
+    string result;
+    unordered_map<int,char> firstIndex;
+
+    for (int i = 0; i < text.size(); i++) {
+
+        if (isdigit(text[i])) {
+            string num;
+            while (i < text.size() && isdigit(text[i])) {
+                num += text[i];
+                i++;
+            }
+            i--;
+
+            int pos = stoi(num);
+            result += firstIndex[pos];
+        } 
+        else {
+            result += text[i];
+            firstIndex[i + 1] = text[i];
+        }
+    }
+    return result;
+}
+
+// Full Decrypt
+string Decrypt(const string& text, int key) {
+    string step1 = RestoreDuplicates(text);
+    string step2 = CaesarDecrypt(step1, key);
+    string step3 = ReverseText(step2);
+    return step3;
+}
+
+int main() {
+    string text;
+    int key;
+
+    cout << "Enter ciphertext: ";
+    getline(cin, text);
+
+    cout << "Enter key: ";
+    cin >> key;
+
+    cout << "Decrypted: " << Decrypt(text, key) << endl;
+
+    return 0;
+}
