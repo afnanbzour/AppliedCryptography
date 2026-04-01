@@ -10,7 +10,8 @@ char decryptChar(char c, int key) {
     return c;
 }
 
-string CaesarDecrypt(const string& text, int key) {
+string CaesarDecrypt(const string& text, int key)
+{
     string result;
     for (char c : text) result += decryptChar(c, key);
     return result;
