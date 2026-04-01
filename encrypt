@@ -1,0 +1,70 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+// Caesar Encrypt
+char encryptChar(char c, int key) {
+    if (isalpha(c)) {
+        char base = isupper(c) ? 'A' : 'a';
+        return (char)(((c - base + key) % 26 + 26) % 26 + base);
+    }
+    return c;
+}
+
+string CaesarEncrypt(const string& text, int key) {
+    string result;
+    for (char c : text) result += encryptChar(c, key);
+    return result;
+}
+
+// Reverse
+string ReverseText(const string& text) {
+    string result = text;
+    reverse(result.begin(), result.end());
+    return result;
+}
+
+// Replace duplicates
+string ReplaceDuplicates(const string& text) {
+    unordered_map<char,int> firstIndex;
+    string result;
+
+    for (int i = 0; i < text.size(); i++) {
+        char c = text[i];
+
+        if (!isalpha(c)) {
+            result += c;
+            continue;
+        }
+
+        if (firstIndex.find(c) == firstIndex.end()) {
+            firstIndex[c] = i + 1;
+            result += c;
+        } else {
+            result += to_string(firstIndex[c]);
+        }
+    }
+    return result;
+}
+
+// Full Encrypt
+string Encrypt(const string& text, int key) {
+    string step1 = ReverseText(text);
+    string step2 = CaesarEncrypt(step1, key);
+    string step3 = ReplaceDuplicates(step2);
+    return step3;
+}
+
+int main() {
+    string text;
+    int key;
+
+    cout << "Enter plaintext: ";
+    getline(cin, text);
+
+    cout << "Enter key: ";
+    cin >> key;
+
+    cout << "Ciphertext: " << Encrypt(text, key) << endl;
+
+    return 0;
+}
