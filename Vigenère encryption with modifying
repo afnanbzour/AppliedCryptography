@@ -1,0 +1,100 @@
+#include <iostream>
+#include <string>
+#include <unordered_map>
+using namespace std;
+
+// Vigenère encryption with modifying
+string vigenereEncrypt(const string &text, const string &key) {
+    string cipher = "", fullKey = key;
+    if (key.length() < text.length()) fullKey += text.substr(0, text.length() - key.length());
+
+    for (size_t i = 0; i < text.length(); ++i) {
+        char c = text[i];
+        if (isalpha(c)) {
+            char offset = isupper(c) ? 'A' : 'a';
+            cipher += (c - offset + toupper(fullKey[i]) - 'A') % 26 + offset;
+        } else cipher += c;
+    }
+    return cipher;
+}
+
+// Vigenère decryption with Autokey
+string vigenereDecrypt(const string &cipher, const string &key) {
+    string text = "", fullKey = key;
+    for (size_t i = 0; i < cipher.length(); ++i) {
+        char c = cipher[i];
+        if (isalpha(c)) {
+            char offset = isupper(c) ? 'A' : 'a';
+            char dec = (c - offset - (toupper(fullKey[i]) - 'A') + 26) % 26 + offset;
+            text += dec;
+            if (fullKey.length() < cipher.length()) fullKey += dec;
+        } else text += c;
+    }
+    return text;
+}
+
+// Reverse text
+string reverseText(const string &text) {
+    string rev = text;
+    for (size_t i = 0; i < rev.length() / 2; ++i)
+        swap(rev[i], rev[rev.length() - i - 1]);
+    return rev;
+}
+
+// Replace duplicate letters with previous positions
+string replaceDuplicates(const string &text) {
+    string result = "";
+    unordered_map<char, int> lastPos;
+    for (size_t i = 0; i < text.length(); ++i) {
+        char c = text[i];
+        if (lastPos.count(c)) result += to_string(lastPos[c] + 1);
+        else result += c;
+        lastPos[c] = i;
+    }
+    return result;
+}
+
+// Restore duplicates from positions
+string restoreDuplicates(const string &text) {
+    string result = "";
+    for (size_t i = 0; i < text.length(); ++i) {
+        char c = text[i];
+        if (isdigit(c)) result += result[c - '0' - 1];
+        else result += c;
+    }
+    return result;
+}
+
+// Full encryption process
+string encryptProcess(const string &text, const string &key) {
+    return replaceDuplicates(reverseText(vigenereEncrypt(text, key)));
+}
+
+// Full decryption process
+string decryptProcess(const string &text, const string &key) {
+    return vigenereDecrypt(reverseText(restoreDuplicates(text)), key);
+}
+
+// Main function
+int main() {
+    string  text, key;
+    int choice;
+    
+    cout << "Choose operation ( 1-encrypt / 2-decrypt ): ";
+    cin >> choice;
+    cin.ignore();
+    
+    cout << "Enter text: ";
+    getline(cin, text);
+    
+    cout << "Enter key: ";
+    getline(cin, key);
+
+    if (choice == 1) cout << "Encrypted text: " << encryptProcess(text, key) << endl;
+    
+    else if (choice == 2) cout << "Decrypted text: " << decryptProcess(text, key) << endl;
+    
+    else cout << "Invalid choice!" << endl;
+
+    return 0;
+}
